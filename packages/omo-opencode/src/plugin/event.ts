@@ -8,6 +8,7 @@ import { getMainSessionID, subagentSessions, syncSubagentSessions } from "../fea
 import { invalidateContextWindowUsageCache } from "../shared/dynamic-truncator";
 import { resolveSessionEventID } from "../shared/event-session-id";
 import { log } from "../shared/logger";
+import { resolveRuntimeFallbackEnabled } from "../shared/fallback-models-presence";
 import { normalizeSessionStatusToIdle } from "./session-status-normalizer";
 import { pruneRecentSyntheticIdles } from "./recent-synthetic-idles";
 import { extractErrorMessage, extractErrorName } from "./event-error-utils";
@@ -39,9 +40,7 @@ export function createEventHandler(args: {
   const isRuntimeFallbackEnabled =
     hooks.runtimeFallback !== null &&
     hooks.runtimeFallback !== undefined &&
-    (typeof pluginConfig.runtime_fallback === "boolean"
-      ? pluginConfig.runtime_fallback
-      : (pluginConfig.runtime_fallback?.enabled ?? false));
+    resolveRuntimeFallbackEnabled(pluginConfig);
   const isModelFallbackEnabled = hooks.modelFallback !== null && hooks.modelFallback !== undefined;
   const runEventHookSafely = createEventHookRunner();
   const dispatchToHooks = createEventHookDispatcher(hooks, runEventHookSafely);

@@ -36,6 +36,7 @@ import {
   log,
 } from "../../shared"
 import { safeCreateHook } from "../../shared/safe-create-hook"
+import { resolveModelFallbackEnabled, resolveRuntimeFallbackConfig } from "../../shared/fallback-models-presence"
 import { sessionExists } from "../../tools"
 import { isTmuxIntegrationEnabled } from "../../create-runtime-tmux-config"
 import { createModelFallbackTitleUpdater } from "./model-fallback-title-updater"
@@ -107,7 +108,7 @@ export function createSessionHooks(args: {
     ? createModelFallbackTitleUpdater(ctx)
     : undefined
 
-  const isModelFallbackConfigEnabled = pluginConfig.model_fallback ?? false
+  const isModelFallbackConfigEnabled = resolveModelFallbackEnabled(pluginConfig)
   const modelFallback = isModelFallbackConfigEnabled && isHookEnabled("model-fallback")
     ? safeHook("model-fallback", () =>
       createModelFallbackHook({
@@ -218,10 +219,7 @@ export function createSessionHooks(args: {
     ? safeHook("task-resume-info", () => createTaskResumeInfoHook())
     : null
 
-  const runtimeFallbackConfig =
-    typeof pluginConfig.runtime_fallback === "boolean"
-      ? { enabled: pluginConfig.runtime_fallback }
-      : pluginConfig.runtime_fallback
+  const runtimeFallbackConfig = resolveRuntimeFallbackConfig(pluginConfig)
 
   const runtimeFallback = isHookEnabled("runtime-fallback")
     ? safeHook("runtime-fallback", () =>
