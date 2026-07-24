@@ -1,0 +1,9 @@
+{
+  "codexHome": "/var/folders/p4/dqjm9d616vj3x779fhhlv7mr0000gn/T/tmp.rL8wjIB1SO/codex",
+  "pluginRoot": "/var/folders/p4/dqjm9d616vj3x779fhhlv7mr0000gn/T/tmp.rL8wjIB1SO/codex/plugins/cache/sisyphuslabs/omo/4.19.1",
+  "enabled": true,
+  "languageCliPresent": true,
+  "hookEventName": "UserPromptSubmit",
+  "detectedLanguage": "Chinese",
+  "realConfigUnchanged": true
+}

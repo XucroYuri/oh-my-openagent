@@ -1,0 +1,8 @@
+
+> @code-yeongyu/codex-lsp@4.19.1 pretypecheck
+> node scripts/build-lsp-tools.mjs && node scripts/build-lsp-daemon.mjs
+
+
+> @code-yeongyu/codex-lsp@4.19.1 typecheck
+> tsc --noEmit
+

@@ -14,12 +14,14 @@ import {
   contextCollector,
   createContextInjectorMessagesTransformHook,
 } from "../../features/context-injector"
+import { createLanguageFollowingHook } from "../../features/language-following"
 import { safeCreateHook } from "../../shared/safe-create-hook"
 
 export type TransformHooks = {
   claudeCodeHooks: ReturnType<typeof createClaudeCodeHooksHook> | null
   keywordDetector: ReturnType<typeof createKeywordDetectorHook> | null
   contextInjectorMessagesTransform: ReturnType<typeof createContextInjectorMessagesTransformHook>
+  languageFollowing: ReturnType<typeof createLanguageFollowingHook> | null
   teamModeStatusInjector: ReturnType<typeof createTeamModeStatusInjector> | null
   teamMailboxInjector: ReturnType<typeof createTeamMailboxInjector> | null
   toolPairValidator: ReturnType<typeof createToolPairValidatorHook> | null
@@ -70,6 +72,15 @@ export function createTransformHooks(args: {
   const contextInjectorMessagesTransform =
     createContextInjectorMessagesTransformHook(contextCollector)
 
+  const languageFollowingConfig = pluginConfig.language_following
+  const languageFollowing = languageFollowingConfig?.enabled !== false && isHookEnabled("language-following")
+    ? safeCreateHook(
+        "language-following",
+        () => createLanguageFollowingHook(languageFollowingConfig ?? { enabled: true }),
+        { enabled: safeHookEnabled },
+      )
+    : null
+
   const teamModeConfig = pluginConfig.team_mode
 
   const teamModeStatusInjector = teamModeConfig?.enabled
@@ -109,6 +120,7 @@ export function createTransformHooks(args: {
     claudeCodeHooks,
     keywordDetector,
     contextInjectorMessagesTransform,
+    languageFollowing,
     teamModeStatusInjector,
     teamMailboxInjector,
     toolPairValidator,

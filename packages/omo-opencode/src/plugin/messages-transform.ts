@@ -31,6 +31,7 @@ type MessageWithParts = {
 type MessagesTransformOutput = { messages: MessageWithParts[] }
 type MessagesTransformHooks = {
   contextInjectorMessagesTransform?: CreatedHooks["contextInjectorMessagesTransform"]
+  languageFollowing?: CreatedHooks["languageFollowing"]
   teamModeStatusInjector?: CreatedHooks["teamModeStatusInjector"]
   teamMailboxInjector?: CreatedHooks["teamMailboxInjector"]
   toolPairValidator?: CreatedHooks["toolPairValidator"]
@@ -50,6 +51,7 @@ type ModelIdentifier = {
 
 const MESSAGES_TRANSFORM_HOOKS = [
   { key: "contextInjectorMessagesTransform", name: "contextInjectorMessagesTransform" },
+  { key: "languageFollowing", name: "languageFollowing" },
   { key: "teamModeStatusInjector", name: "teamModeStatusInjector" },
   { key: "teamMailboxInjector", name: "teamMailboxInjector" },
   { key: "toolPairValidator", name: "toolPairValidator" },

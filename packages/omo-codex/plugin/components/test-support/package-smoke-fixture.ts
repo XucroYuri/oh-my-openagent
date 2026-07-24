@@ -29,6 +29,7 @@ export type HooksJson = {
 export type McpServer = {
 	readonly command: string;
 	readonly args: readonly string[];
+	readonly startup_timeout_sec?: number;
 };
 
 export type McpJson = {
@@ -133,11 +134,13 @@ function isMcpJson(value: unknown): value is McpJson {
 }
 
 function isMcpServer(value: unknown): value is McpServer {
+	const startupTimeout = isRecord(value) ? value["startup_timeout_sec"] : undefined;
 	return (
 		isRecord(value) &&
 		typeof value["command"] === "string" &&
 		Array.isArray(value["args"]) &&
-		value["args"].every((item) => typeof item === "string")
+		value["args"].every((item) => typeof item === "string") &&
+		(startupTimeout === undefined || typeof startupTimeout === "number")
 	);
 }
 

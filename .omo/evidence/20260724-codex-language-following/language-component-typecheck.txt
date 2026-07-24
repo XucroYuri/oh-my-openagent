@@ -1,0 +1,4 @@
+
+> @code-yeongyu/codex-language@4.19.1 typecheck
+> tsc --noEmit
+

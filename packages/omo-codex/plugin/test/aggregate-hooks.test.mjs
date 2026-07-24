@@ -32,6 +32,7 @@ test("#given isolated components #when hooks are inspected #then commands stay i
 		"components/lsp/dist/cli.js",
 		"components/codegraph/dist/cli.js",
 		"components/rules/dist/cli.js",
+		"components/language/dist/cli.js",
 		"components/start-work-continuation/dist/cli.js",
 		"components/telemetry/dist/cli.js",
 		"components/teammode/dist/cli.js",
@@ -122,6 +123,7 @@ test("#given aggregate hook commands #when inspected #then commands stay Node-ba
 
 	// then
 	assert(!commands.some((command) => /\bpython3?\b/i.test(command)));
+	assert(commands.includes('node "${PLUGIN_ROOT}/components/language/dist/cli.js" hook user-prompt-submit'));
 	assert(commands.includes('node "${PLUGIN_ROOT}/components/ultrawork/dist/cli.js" hook user-prompt-submit'));
 	assert(!commands.some((command) => command.includes("components/workflow-selector/")));
 	assert(commands.every((command) => command.startsWith("node ")));
@@ -182,7 +184,7 @@ test("#given aggregate OMO plugin is enabled #when hooks are inspected #then she
 	assert.match(text, /hook pre-tool-use-spawn/);
 });
 
-test("#given aggregate OMO plugin has a dedicated ultrawork trigger #when hooks are inspected #then ulw-loop does not duplicate ultrawork injection", async () => {
+test("#given aggregate OMO plugin prompt hooks #when hooks are inspected #then language following and ultrawork triggers remain distinct", async () => {
 	// given
 	const commandHooks = await readAggregateCommandHooks();
 
@@ -197,10 +199,16 @@ test("#given aggregate OMO plugin has a dedicated ultrawork trigger #when hooks 
 			hook.eventName === "UserPromptSubmit" &&
 			hook.handler.command === 'node "${PLUGIN_ROOT}/components/ultrawork/dist/cli.js" hook user-prompt-submit',
 	);
+	const languageUserPromptHooks = commandHooks.filter(
+		(hook) =>
+			hook.eventName === "UserPromptSubmit" &&
+			hook.handler.command === 'node "${PLUGIN_ROOT}/components/language/dist/cli.js" hook user-prompt-submit',
+	);
 
 	// then
 	assert.equal(ulwLoopUserPromptHooks.length, 1);
 	assert.equal(ultraworkUserPromptHooks.length, 1);
+	assert.equal(languageUserPromptHooks.length, 1);
 	assert(ulwLoopUserPromptHooks.every((hook) => !hook.handler.command.includes("--with-ultrawork")));
 });
 

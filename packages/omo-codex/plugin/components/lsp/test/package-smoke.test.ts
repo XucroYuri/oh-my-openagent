@@ -1,3 +1,6 @@
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
 import {
 	listDirectoryEntries,
@@ -8,17 +11,19 @@ import {
 	requireScripts,
 } from "../../test-support/package-smoke-fixture.js";
 
+const componentRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+
 describe("plugin package metadata", () => {
 	it("#given packaged component files #when validating entrypoints #then hook command stays local and MCP command references the package", () => {
 		// given
-		const packageJson = readPackageJson("package.json");
-		const hooksJson = readHooksJson("hooks/hooks.json");
-		const mcpJson = readMcpJson(".mcp.json");
-		const cliSource = readTextFile("src/cli.ts");
-		const daemonCliPathSource = readTextFile("src/daemon-cli-path.ts");
-		const codexHookCliSource = readTextFile("src/codex-hook-cli.ts");
-		const codexHookSource = readTextFile("src/codex-hook.ts");
-		const sourceFiles = listDirectoryEntries("src");
+		const packageJson = readPackageJson(join(componentRoot, "package.json"));
+		const hooksJson = readHooksJson(join(componentRoot, "hooks/hooks.json"));
+		const mcpJson = readMcpJson(join(componentRoot, ".mcp.json"));
+		const cliSource = readTextFile(join(componentRoot, "src/cli.ts"));
+		const daemonCliPathSource = readTextFile(join(componentRoot, "src/daemon-cli-path.ts"));
+		const codexHookCliSource = readTextFile(join(componentRoot, "src/codex-hook-cli.ts"));
+		const codexHookSource = readTextFile(join(componentRoot, "src/codex-hook.ts"));
+		const sourceFiles = listDirectoryEntries(join(componentRoot, "src"));
 		const scripts = requireScripts(packageJson, "package.json");
 
 		// when
@@ -62,7 +67,7 @@ describe("plugin package metadata", () => {
 	});
 
 	it("#given built component CLI #when runtime imports are inspected #then it is self-contained except Node builtins", () => {
-		const cliSource = readTextFile("dist/cli.js");
+		const cliSource = readTextFile(join(componentRoot, "dist/cli.js"));
 		const imports = [
 			...cliSource.matchAll(/\bimport\s+(?:[^'";]+?\s+from\s+)?["']([^"']+)["']/g),
 			...cliSource.matchAll(/\bimport\s*\(\s*["']([^"']+)["']\s*\)/g),

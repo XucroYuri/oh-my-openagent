@@ -2,7 +2,7 @@
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { chmod, lstat, mkdir, readFile, readlink, symlink, writeFile } from "node:fs/promises";
+import { access, chmod, constants, lstat, mkdir, readFile, readlink, symlink, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import test from "node:test";
 
@@ -52,6 +52,7 @@ test("#given bun absent from PATH but present in ~/.bun/bin #when running the om
 test("#given bun absent everywhere #when running the omo runtime wrapper #then fails with an actionable install hint", async (t) => {
 	if (process.platform === "win32") return t.skip("posix wrapper execution");
 	const { homeDir, link } = await writeRuntimeWrapperFixture();
+	if (await hasBunFallback(homeDir)) return t.skip("Bun is installed in a wrapper fallback path on this host");
 
 	const result = spawnSync(link.path, ["--version"], {
 		encoding: "utf8",
@@ -62,6 +63,19 @@ test("#given bun absent everywhere #when running the omo runtime wrapper #then f
 	assert.match(result.stderr, /bun runtime not found/);
 	assert.match(result.stderr, /https:\/\/bun\.sh/);
 });
+
+async function hasBunFallback(homeDir) {
+	const candidates = [join(homeDir, ".bun", "bin", "bun"), "/opt/homebrew/bin/bun", "/usr/local/bin/bun"];
+	for (const candidate of candidates) {
+		try {
+			await access(candidate, constants.X_OK);
+			return true;
+		} catch {
+			continue;
+		}
+	}
+	return false;
+}
 
 test("#given OMO_RUNTIME=node and a node CLI bundle #when running the omo runtime wrapper #then executes the node CLI", async (t) => {
 	if (process.platform === "win32") return t.skip("posix wrapper execution");
@@ -79,6 +93,7 @@ test("#given OMO_RUNTIME=node and a node CLI bundle #when running the omo runtim
 test("#given bun absent everywhere and a node CLI bundle #when running the omo runtime wrapper #then falls back to node", async (t) => {
 	if (process.platform === "win32") return t.skip("posix wrapper execution");
 	const { homeDir, link } = await writeRuntimeWrapperFixture({ withNodeCli: true });
+	if (await hasBunFallback(homeDir)) return t.skip("Bun is installed in a wrapper fallback path on this host");
 
 	const result = spawnSync(link.path, ["--version"], {
 		encoding: "utf8",
@@ -92,6 +107,7 @@ test("#given bun absent everywhere and a node CLI bundle #when running the omo r
 test("#given bun absent and no node CLI bundle #when running the omo runtime wrapper #then the error names both runtimes", async (t) => {
 	if (process.platform === "win32") return t.skip("posix wrapper execution");
 	const { homeDir, link } = await writeRuntimeWrapperFixture();
+	if (await hasBunFallback(homeDir)) return t.skip("Bun is installed in a wrapper fallback path on this host");
 
 	const result = spawnSync(link.path, ["--version"], {
 		encoding: "utf8",

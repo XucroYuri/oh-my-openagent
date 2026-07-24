@@ -1,0 +1,13 @@
+
+> @code-yeongyu/codex-language@4.19.1 test
+> vitest --run
+
+
+ RUN  v4.1.8 /Users/huachi/Code/06-dev-tools/oh-my-openagent/packages/omo-codex/plugin/components/language
+
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  12:14:17
+   Duration  126ms (transform 31ms, setup 0ms, import 50ms, tests 3ms, environment 0ms)
+
