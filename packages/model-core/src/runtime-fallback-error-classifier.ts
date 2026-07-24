@@ -35,6 +35,9 @@ export const RUNTIME_FALLBACK_RETRYABLE_ERROR_PATTERNS = [
   /usage.?exceeded/i,
   /exhausted\s+your\s+capacity/i,
   /limit\s+exhausted/i,
+  /requires?\s+more\s+credits?/i,
+  /can\s+only\s+afford/i,
+  /more\s+credits/i,
   /all\s+credentials\s+for\s+model/i,
   /cool(?:ing)?\s+down/i,
   /model.{0,20}?not.{0,10}?supported/i,
@@ -75,6 +78,7 @@ function isLocalizedQuotaExhaustionMessage(message: string): boolean {
 export function classifyRuntimeFallbackError(error: unknown): RuntimeFallbackErrorType | undefined {
   const message = getRuntimeFallbackErrorMessage(error)
   const errorName = getRuntimeFallbackErrorName(error)?.toLowerCase().replace(/[_-]/g, "")
+  const statusCode = getRuntimeFallbackStatusCode(error)
 
   if (errorName?.includes("messageabortederror") || errorName?.includes("aborterror")) {
     return "abort"
@@ -105,6 +109,7 @@ export function classifyRuntimeFallbackError(error: unknown): RuntimeFallbackErr
   }
 
   if (
+    statusCode === 402 ||
     errorName?.includes("quotaexceeded") ||
     errorName?.includes("insufficientquota") ||
     errorName?.includes("billingerror") ||
@@ -122,6 +127,8 @@ export function classifyRuntimeFallbackError(error: unknown): RuntimeFallbackErr
     /usage\s+limit/i.test(message) ||
     /credit\s+balance.*too\s+low/i.test(message) ||
     /limit\s+exhausted/i.test(message) ||
+    /requires?\s+more\s+credits?/i.test(message) ||
+    /can\s+only\s+afford/i.test(message) ||
     /使用上限/.test(message) ||
     /达到.*限制/.test(message) ||
     /额度.*不足/.test(message) ||
