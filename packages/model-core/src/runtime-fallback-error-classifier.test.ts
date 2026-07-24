@@ -190,4 +190,35 @@ describe("runtime fallback error classifier", () => {
     //#then
     expect(signal).toEqual({ signal: retryInfo.summary })
   })
+
+  test("classifies OpenRouter insufficient-credits 402 as quota_exceeded and retryable", () => {
+    // given — payloads captured from the oh-my-opencode.log incident on 2026-07-24:
+    // OpenRouter returned 402 "This request requires more credits..." but the prior
+    // classifier matched neither the wording nor the status, so runtime-fallback
+    // judged it "not retryable" and skipped the switch for ~5 minutes.
+    const cases = [
+      {
+        label: "openrouter 402 with 'requires more credits' wording",
+        error: {
+          name: "APIError",
+          data: {
+            message:
+              "This request requires more credits, or fewer max_tokens. You requested up to 32000 tokens, but can only afford 15268. To increase, visit https://openrouter.ai/settings/credits and add more credits",
+            statusCode: 402,
+            isRetryable: false,
+          },
+        },
+      },
+      {
+        label: "bare 402 status with no quota wording (status alone must classify)",
+        error: { data: { message: "Payment Required", statusCode: 402 } },
+      },
+    ]
+
+    // when / then
+    for (const { label, error } of cases) {
+      expect(classifyRuntimeFallbackError(error), label).toBe("quota_exceeded")
+      expect(isRuntimeFallbackRetryableError(error, DEFAULT_RETRY_CODES), label).toBe(true)
+    }
+  })
 })

@@ -2,6 +2,12 @@ import type { HookDeps } from "./types"
 import { HOOK_NAME } from "./constants"
 import { log } from "../../shared/logger"
 import { createFallbackState, isModelInCooldown } from "./fallback-state"
+import { parseModelString } from "../../shared/model-string-parser"
+
+function modelWithoutVariant(modelStr: string): string {
+  const parsed = parseModelString(modelStr)
+  return parsed ? `${parsed.providerID}/${parsed.modelID}` : modelStr
+}
 
 export function createChatMessageHandler(deps: HookDeps) {
   const { config, sessionStates, sessionLastAccess } = deps
@@ -23,13 +29,17 @@ export function createChatMessageHandler(deps: HookDeps) {
       ? `${input.model.providerID}/${input.model.modelID}`
       : undefined
 
-    if (requestedModel && requestedModel !== state.currentModel) {
-      if (state.pendingFallbackModel && state.pendingFallbackModel === requestedModel) {
-        state.pendingFallbackModel = undefined
-        state.pendingFallbackPromptMayHaveBeenAccepted = false
-        return
-      }
+    const normalizedPendingFallback = state.pendingFallbackModel
+      ? modelWithoutVariant(state.pendingFallbackModel)
+      : undefined
 
+    if (requestedModel && normalizedPendingFallback && normalizedPendingFallback === requestedModel) {
+      state.pendingFallbackModel = undefined
+      state.pendingFallbackPromptMayHaveBeenAccepted = false
+      return
+    }
+
+    if (requestedModel && requestedModel !== modelWithoutVariant(state.currentModel)) {
       log(`[${HOOK_NAME}] Detected manual model change, resetting fallback state`, {
         sessionID,
         from: state.currentModel,
@@ -75,11 +85,11 @@ export function createChatMessageHandler(deps: HookDeps) {
     })
 
     if (output.message && activeModel) {
-      const parts = activeModel.split("/")
-      if (parts.length >= 2) {
+      const parsed = parseModelString(activeModel)
+      if (parsed) {
         output.message.model = {
-          providerID: parts[0],
-          modelID: parts.slice(1).join("/"),
+          providerID: parsed.providerID,
+          modelID: parsed.modelID,
         }
       }
     }
