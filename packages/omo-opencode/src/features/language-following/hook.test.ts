@@ -70,6 +70,27 @@ describe("createLanguageFollowingHook", () => {
     expect(injectedText(message)).toContain("Respond to the user in Japanese")
   })
 
+  test.each([
+    ["fr", "French"],
+    ["de", "German"],
+    ["es", "Spanish"],
+    ["zh-CN", "Simplified Chinese"],
+    ["pt_BR", "Brazilian Portuguese"],
+    ["fr-CA", "French"],
+    ["xx", "xx"],
+  ] as const)("resolves locale %s to %s", async (locale, expected) => {
+    // given
+    const hook = createLanguageFollowingHook({ enabled: true, locale })
+    const message = userTurn("assess the project")
+    const output = { messages: [message] }
+
+    // when
+    await hook["experimental.chat.messages.transform"]?.({} as never, output)
+
+    // then
+    expect(injectedText(message)).toContain(`Respond to the user in ${expected}`)
+  })
+
   test("does nothing when disabled", async () => {
     // given
     const hook = createLanguageFollowingHook({ enabled: false })

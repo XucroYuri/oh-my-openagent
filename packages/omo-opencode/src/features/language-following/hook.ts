@@ -20,6 +20,8 @@ type MessagesTransformHook = {
 const LOCALE_NAMES: Record<string, string> = {
   en: "English",
   zh: "Chinese",
+  "zh-cn": "Simplified Chinese",
+  "zh-tw": "Traditional Chinese",
   ja: "Japanese",
   ko: "Korean",
   ru: "Russian",
@@ -28,11 +30,23 @@ const LOCALE_NAMES: Record<string, string> = {
   th: "Thai",
   hi: "Hindi",
   el: "Greek",
+  es: "Spanish",
+  fr: "French",
+  de: "German",
+  it: "Italian",
+  pt: "Portuguese",
+  "pt-br": "Brazilian Portuguese",
+  tr: "Turkish",
+  pl: "Polish",
+  nl: "Dutch",
+  vi: "Vietnamese",
+  id: "Indonesian",
 }
 
 function resolveLanguageName(config: LanguageFollowingConfig, userText: string): string {
   if (config.locale) {
-    return LOCALE_NAMES[config.locale] ?? config.locale
+    const normalized = config.locale.trim().replace(/_/g, "-").toLowerCase()
+    return LOCALE_NAMES[normalized] ?? LOCALE_NAMES[normalized.split("-")[0]] ?? config.locale
   }
   return detectLanguage(userText).name
 }
