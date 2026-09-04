@@ -1,0 +1,2 @@
+extension_bundle_contains_directive=1
+component_registered_in_extension_index=2

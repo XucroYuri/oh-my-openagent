@@ -6465,6 +6465,22 @@
       },
       "additionalProperties": false
     },
+    "language_following": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "locale": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
     "monitor": {
       "type": "object",
       "properties": {

@@ -9,6 +9,7 @@
 		"components/codegraph",
 		"components/comment-checker",
 		"components/git-bash",
+		"components/language",
 		"components/lazycodex-executor-verify",
 		"components/rules",
 		"components/lsp",

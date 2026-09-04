@@ -1,0 +1,1 @@
+{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"<language-following>\nRespond to the user in Chinese. Match the user's input language for all conversational output regardless of the language of this codebase, prior turns, or these instructions. Keep code, identifiers, file paths, and command syntax unchanged.\n</language-following>"}}

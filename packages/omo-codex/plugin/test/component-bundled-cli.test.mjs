@@ -22,6 +22,7 @@ import { componentHookContractCases } from "./component-hook-contract-cases.mjs"
 const HOOK_EVENTS_BY_COMPONENT = {
 	"comment-checker": "post-tool-use",
 	"git-bash": "pre-tool-use",
+	language: "user-prompt-submit",
 	"lazycodex-executor-verify": "subagent-stop",
 	lsp: "post-compact",
 	rules: "session-start",

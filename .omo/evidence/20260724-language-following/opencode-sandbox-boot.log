@@ -1,0 +1,10 @@
+timestamp=2026-07-24T03:57:41.473Z level=INFO run=310c4e46 message="creating instance" directory=/Users/huachi/Code/06-dev-tools/oh-my-openagent
+timestamp=2026-07-24T03:57:41.474Z level=INFO run=310c4e46 message=fromDirectory directory=/Users/huachi/Code/06-dev-tools/oh-my-openagent
+timestamp=2026-07-24T03:57:41.530Z level=INFO run=310c4e46 message=bootstrapping directory=/Users/huachi/Code/06-dev-tools/oh-my-openagent
+timestamp=2026-07-24T03:57:41.535Z level=INFO run=310c4e46 message=loading path=/var/folders/p4/dqjm9d616vj3x779fhhlv7mr0000gn/T/tmp.JbfdKzg6rz/qa/config/opencode/config.json
+timestamp=2026-07-24T03:57:41.535Z level=INFO run=310c4e46 message=loading path=/var/folders/p4/dqjm9d616vj3x779fhhlv7mr0000gn/T/tmp.JbfdKzg6rz/qa/config/opencode/opencode.json
+timestamp=2026-07-24T03:57:41.537Z level=INFO run=310c4e46 message=loading path=/var/folders/p4/dqjm9d616vj3x779fhhlv7mr0000gn/T/tmp.JbfdKzg6rz/qa/config/opencode/opencode.jsonc
+timestamp=2026-07-24T03:57:41.620Z level=DEBUG run=310c4e46 message="loading config from /Users/huachi/Code/06-dev-tools/oh-my-openagent/.opencode/opencode.json"
+timestamp=2026-07-24T03:57:41.620Z level=INFO run=310c4e46 message=loading path=/Users/huachi/Code/06-dev-tools/oh-my-openagent/.opencode/opencode.json
+timestamp=2026-07-24T03:57:41.620Z level=DEBUG run=310c4e46 message="loading config from /Users/huachi/Code/06-dev-tools/oh-my-openagent/.opencode/opencode.jsonc"
+timestamp=2026-07-24T03:57:41.620Z level=INFO run=310c4e46 message=loading path=/Users/huachi/Code/06-dev-tools/oh-my-openagent/.opencode/opencode.jsonc

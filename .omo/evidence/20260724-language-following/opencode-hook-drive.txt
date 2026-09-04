@@ -1,0 +1,6 @@
+PASS [Chinese] -> Respond to the user in Chinese. Match the user's input 
+PASS [English] -> Respond to the user in English. Match the user's input 
+PASS [Japanese] -> Respond to the user in Japanese. Match the user's input
+PASS [Korean] -> Respond to the user in Korean. Match the user's input l
+PASS [locale-lock ja over zh]
+PASS [disabled=no inject]

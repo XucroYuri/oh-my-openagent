@@ -66,6 +66,26 @@ export function componentHookContractCases(tempRoot) {
 			},
 		},
 		{
+			name: "language user-prompt-submit directive",
+			component: "language",
+			event: "user-prompt-submit",
+			payload: {
+				hook_event_name: "UserPromptSubmit",
+				session_id: "s-task12",
+				turn_id: "t-task12",
+				transcript_path: null,
+				cwd: tempRoot,
+				model: "gpt-5.5",
+				permission_mode: "default",
+				prompt: "请修复这个错误。",
+			},
+			assertOutput(stdout) {
+				const output = JSON.parse(stdout);
+				assert.equal(output.hookSpecificOutput.hookEventName, "UserPromptSubmit");
+				assert.match(output.hookSpecificOutput.additionalContext, /<language-following>/);
+			},
+		},
+		{
 			name: "ulw-loop pre-tool-use budget guard",
 			component: "ulw-loop",
 			event: "pre-tool-use",

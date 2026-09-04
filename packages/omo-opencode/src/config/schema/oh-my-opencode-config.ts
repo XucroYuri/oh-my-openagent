@@ -15,6 +15,7 @@ import { ExperimentalConfigSchema } from "./experimental"
 import { GitMasterConfigSchema } from "./git-master"
 import { I18nConfigSchema } from "./i18n"
 import { KeywordDetectorConfigSchema } from "./keyword-detector"
+import { LanguageFollowingConfigSchema } from "./language-following"
 import { NotificationConfigSchema } from "./notification"
 import { OpenClawConfigSchema } from "./openclaw"
 import { ModelCapabilitiesConfigSchema } from "./model-capabilities"
@@ -85,6 +86,8 @@ export const OhMyOpenCodeConfigSchema = z.object({
   openclaw: OpenClawConfigSchema.optional(),
   /** Plugin i18n settings */
   i18n: I18nConfigSchema.optional(),
+  /** Make agents mirror the developer's input language in conversation (default: enabled) */
+  language_following: LanguageFollowingConfigSchema.optional(),
   monitor: MonitorConfigSchema.optional(),
   codegraph: CodegraphConfigSchema.optional(),
   team_mode: TeamModeConfigSchema.optional(),

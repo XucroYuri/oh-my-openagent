@@ -1,16 +1,12 @@
 #!/usr/bin/env node
 var __defProp = Object.defineProperty;
-var __returnValue = (v) => v;
-function __exportSetter(name, newValue) {
-  this[name] = __returnValue.bind(null, newValue);
-}
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, {
       get: all[name],
       enumerable: true,
       configurable: true,
-      set: __exportSetter.bind(all, name)
+      set: (newValue) => all[name] = () => newValue
     });
 };
 var __esm = (fn, res) => () => (fn && (res = fn(fn = 0)), res);
@@ -5903,7 +5899,7 @@ var package_default;
 var init_package = __esm(() => {
   package_default = {
     name: "@oh-my-opencode/omo-codex",
-    version: "4.19.0",
+    version: "4.19.1",
     type: "module",
     private: true,
     description: "Codex harness adapter for oh-my-openagent. Vendored Codex plugin namespace (omo) + TypeScript installer + telemetry.",
@@ -6429,7 +6425,7 @@ function whereCommand(command) {
   }
 }
 // packages/omo-codex/src/install/codex-process.ts
-var WINDOWS_CMD_SHIM_COMMANDS = new Set(["npm", "npx"]);
+var WINDOWS_CMD_SHIM_COMMANDS = new Set(["codex", "npm", "npx"]);
 function resolveRunCommandInvocation(command, args, platform = process.platform) {
   if (platform !== "win32" || !WINDOWS_CMD_SHIM_COMMANDS.has(command.toLowerCase())) {
     return { command, args: [...args] };
@@ -7068,6 +7064,7 @@ async function rewriteCachedPackageLocalFileDependencies(pluginRoot, sourceRoot)
   const packageJsonPaths = [];
   await collectPackageJsonPaths(pluginRoot, pluginRoot, packageJsonPaths);
   const packageLock = await readPackageLock(pluginRoot);
+  let rewroteAnyPackageJson = false;
   for (const packageJsonPath of packageJsonPaths) {
     const raw = await readFile5(packageJsonPath, "utf8");
     const parsed = JSON.parse(raw);
@@ -7103,13 +7100,16 @@ async function rewriteCachedPackageLocalFileDependencies(pluginRoot, sourceRoot)
         changed = true;
       }
     }
-    if (changed)
+    if (changed) {
       await writeFile2(packageJsonPath, `${JSON.stringify(parsed, null, "\t")}
 `);
+      rewroteAnyPackageJson = true;
+    }
   }
   if (packageLock.changed)
     await writeFile2(packageLock.path, `${JSON.stringify(packageLock.value, null, "\t")}
 `);
+  return rewroteAnyPackageJson;
 }
 async function readPackageLock(pluginRoot) {
   const path = join8(pluginRoot, "package-lock.json");
@@ -7530,10 +7530,11 @@ async function installCachedPlugin(input) {
   await rm4(tempPath, { recursive: true, force: true });
   try {
     await copyDirectory(input.sourcePath, tempPath);
-    await rewriteCachedPackageLocalFileDependencies(tempPath, input.sourcePath);
+    const rewroteLocalFileDependencies = await rewriteCachedPackageLocalFileDependencies(tempPath, input.sourcePath);
     await copyBundledMcpRuntimeDists({ pluginRoot: tempPath, sourceRoot: input.sourcePath });
     await copyRootRuntimeDists({ pluginRoot: tempPath, sourcePath: input.sourcePath });
-    await maybeRunNpmInstall(tempPath, input.runCommand, npmInstallEnv, ["ci", "--omit=dev"]);
+    const installArgs = rewroteLocalFileDependencies ? ["install", "--omit=dev", "--no-audit", "--no-fund"] : ["ci", "--omit=dev"];
+    await maybeRunNpmInstall(tempPath, input.runCommand, npmInstallEnv, installArgs);
     await removeCachedManagedNpmBinShims(tempPath);
     if (input.buildSource === false)
       await maybeRunNpmSyncSkills(tempPath, input.runCommand, env);
